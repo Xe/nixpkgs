@@ -1,5 +1,5 @@
 { stdenv, fetchurl, python27Packages, python36Packages, wmctrl,
-  qtbase, mkDerivationWith }:
+  qtbase, mkDerivationWith, wrapQtAppsHook }:
 
 {
   stable = with python27Packages; buildPythonPackage rec {
@@ -45,11 +45,16 @@
 
     checkInputs           = [ pytest mock ];
     propagatedBuildInputs = [ Babel pyqt5 xlib pyserial appdirs wcwidth setuptools ];
+    nativeBuiltInputs     = [ wrapQtAppsHook ];
 
     dontWrapQtApps = true;
 
     preFixup = ''
       makeWrapperArgs+=("''${qtWrapperArgs[@]}")
+    '';
+    
+    postFixup = ''
+      wrapQtApp "$out/bin/plover"
     '';
   };
 }
